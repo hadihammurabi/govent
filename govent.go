@@ -10,9 +10,9 @@ func New() *Bus {
 	}
 }
 
-func (b *Bus) On(name string, handler EventHandler) {
+func (b *Bus) On(name string, handler EventHandlerCallback) {
 	if _, ok := b.Events[name]; !ok {
-		b.Events[name] = NewEvent(handler)
+		b.Events[name] = NewEvent(name, handler)
 		return
 	}
 

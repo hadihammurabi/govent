@@ -8,12 +8,12 @@ import (
 
 func main() {
 	bus := govent.New()
-	bus.On("click", func(args ...interface{}) {
-		fmt.Println("clicked 1", args)
+	bus.On("click", func(e govent.Event) {
+		fmt.Println("clicked 1", e.Args)
 	})
 
-	bus.On("click", func(args ...interface{}) {
-		fmt.Println("clicked 2", args)
+	bus.On("click", func(e govent.Event) {
+		fmt.Println("clicked 1", e.Args)
 	})
 
 	bus.Emit("click", "mantap", "asiap")

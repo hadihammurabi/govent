@@ -1,23 +1,33 @@
 package govent
 
-type EventHandler func(args ...interface{})
-
-type Event struct {
-	Handlers []EventHandler
+type EventHandlerCallback func(Event)
+type EventHandler struct {
+	Callback EventHandlerCallback
 }
 
-func NewEvent(handers ...EventHandler) *Event {
+type Event struct {
+	Name     string
+	Handlers []EventHandler
+	Args     []interface{}
+}
+
+func NewEvent(name string, handlers ...EventHandlerCallback) *Event {
+	eventHandlers := []EventHandler{}
+	for _, callback := range handlers {
+		eventHandlers = append(eventHandlers, EventHandler{Callback: callback})
+	}
+
 	return &Event{
-		Handlers: handers,
+		Handlers: eventHandlers,
 	}
 }
 
-func (e *Event) AddHandler(handler EventHandler) {
-	e.Handlers = append(e.Handlers, handler)
+func (e *Event) AddHandler(handler EventHandlerCallback) {
+	e.Handlers = append(e.Handlers, EventHandler{Callback: handler})
 }
 
 func (e Event) ExecHandlers(args ...interface{}) {
 	for _, handler := range e.Handlers {
-		handler(args...)
+		handler.Callback(e)
 	}
 }
