@@ -1,6 +1,6 @@
 package govent
 
-type EventHandlerCallback func(Event)
+type EventHandlerCallback func(Event) error
 type EventHandler struct {
 	Callback EventHandlerCallback
 }
@@ -30,9 +30,16 @@ func (e *Event) AddHandler(handler EventHandlerCallback, push ...bool) {
 	}
 }
 
-func (e Event) ExecHandlers(args ...interface{}) {
+func (e Event) ExecHandlers(skipOnError bool, args ...interface{}) {
 	for _, handler := range e.Handlers {
 		e.Args = args
-		handler.Callback(e)
+		err := handler.Callback(e)
+		if err != nil && !skipOnError {
+			break
+		}
+
+		if err != nil && skipOnError {
+			continue
+		}
 	}
 }

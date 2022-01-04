@@ -6,6 +6,7 @@ type Bus struct {
 	Events map[string]*Event
 
 	singleListener bool
+	skipOnError    bool
 }
 
 func New(options ...*option.Option) *Bus {
@@ -19,6 +20,8 @@ func New(options ...*option.Option) *Bus {
 func (b *Bus) parseOptions(options ...*option.Option) {
 	for _, opt := range options {
 		switch opt {
+		case option.SkipOnError:
+			b.skipOnError = true
 		case option.SingleListener:
 			b.singleListener = true
 		}
@@ -40,5 +43,5 @@ func (b Bus) Emit(name string, args ...interface{}) {
 		panic("no handler for event " + name)
 	}
 
-	event.ExecHandlers(args...)
+	event.ExecHandlers(b.skipOnError, args...)
 }

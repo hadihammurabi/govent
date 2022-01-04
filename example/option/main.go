@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/hadihammurabi/govent"
@@ -8,14 +9,30 @@ import (
 )
 
 func main() {
-	bus := govent.New(option.SingleListener)
-	bus.On("click", func(e govent.Event) {
-		fmt.Println("clicked 1", e.Args)
+
+	// run all listeners even if there is listener return error
+	busWithSkipOnError := govent.New(option.SkipOnError)
+	busWithSkipOnError.On("click", func(e govent.Event) error {
+		fmt.Println("[busWithSkipOnError] clicked 1", e.Args)
+		return errors.New("waduh")
 	})
 
-	bus.On("click", func(e govent.Event) {
-		fmt.Println("clicked 2", e.Args)
+	busWithSkipOnError.On("click", func(e govent.Event) error {
+		fmt.Println("[busWithSkipOnError] clicked 2", e.Args)
+		return nil
+	})
+	busWithSkipOnError.Emit("click", "mantap", "asiap")
+
+	// only execute last listener
+	busWithSingleListener := govent.New(option.SingleListener)
+	busWithSingleListener.On("click", func(e govent.Event) error {
+		fmt.Println("[busWithSingleListener] clicked 1", e.Args)
+		return nil
 	})
 
-	bus.Emit("click", "mantap", "asiap")
+	busWithSingleListener.On("click", func(e govent.Event) error {
+		fmt.Println("[busWithSingleListener] clicked 2", e.Args)
+		return nil
+	})
+	busWithSingleListener.Emit("click", "mantap", "asiap")
 }
