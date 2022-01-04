@@ -22,8 +22,12 @@ func NewEvent(name string, handlers ...EventHandlerCallback) *Event {
 	}
 }
 
-func (e *Event) AddHandler(handler EventHandlerCallback) {
-	e.Handlers = append(e.Handlers, EventHandler{Callback: handler})
+func (e *Event) AddHandler(handler EventHandlerCallback, push ...bool) {
+	if len(push) == 0 || (len(push) > 0 && !push[0]) {
+		e.Handlers = append(e.Handlers, EventHandler{Callback: handler})
+	} else if push[0] {
+		e.Handlers = []EventHandler{{handler}}
+	}
 }
 
 func (e Event) ExecHandlers(args ...interface{}) {
