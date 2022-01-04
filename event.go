@@ -28,6 +28,7 @@ func (e *Event) AddHandler(handler EventHandlerCallback) {
 
 func (e Event) ExecHandlers(args ...interface{}) {
 	for _, handler := range e.Handlers {
+		e.Args = args
 		handler.Callback(e)
 	}
 }
